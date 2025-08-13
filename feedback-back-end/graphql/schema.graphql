@@ -1,0 +1,111 @@
+"A datetime string with format `Y-m-d H:i:s`, e.g. `2018-05-23 13:43:32`."
+scalar DateTime
+    @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+
+"Indicates what fields are available at the top level of a query operation."
+type Query {
+    users: [User!]! @all @guard
+    user(id: ID! @eq): User @find @guard
+    questions: [Question!]! @all
+    question(id: ID! @eq): Question @find @guard
+    answers: [Answer!]! @all @guard
+    answer(id: ID! @eq): Answer @find @guard
+    order(id: ID! @eq): Order @find @guard
+    orders: [Order!]! @all @guard
+}
+
+type User {
+    name: String!
+    email: String!
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+type Question {
+    id: ID!
+    text: String!
+    user_id: ID
+    user: User @belongsTo
+    updated_by: ID
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+type Order {
+    id: ID!
+    name: String!
+    phone: String!
+    user_id: ID
+    user: User @belongsTo
+    updated_by: ID
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+type Answer {
+    id: ID!
+    order_id: ID!
+    created_at: DateTime!
+    updated_at: DateTime!
+    answersQuestions: [AnswerQuestion!]! @hasMany
+    order: Order @belongsTo
+}
+
+type AnswerQuestion {
+    id: ID!
+    answer_id: ID!
+    text_answer: String!
+    question_id: ID!
+    question: Question @belongsTo
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+input AnswerInput {
+    question_id: ID! 
+    answer: String! 
+}
+
+type MessageResponse {
+    message: String
+}
+
+type Mutation {
+    createUser(name: String!, email: String!, password: String!): User
+
+    createQuestion(text: String!): Question @guard 
+
+    createOrder(name: String!, phone: String!): Order @guard
+
+    createAnswer(phone: String!, answersQuestions: [AnswerInput!]!): Answer
+
+    updateUser(
+        id: ID! @rules(apply: ["exists:users,id"])
+        name: String @rules(apply: ["string", "max:255"])
+        email: String
+            @rules(apply: ["string", "email", "max:255", "unique:users,email"])
+        password: String @rules(apply: ["string", "min:8"])
+    ): User @guard
+
+    updateQuestion(
+        id: ID! @rules(apply: ["exists:questions,id"])
+        text: String @rules(apply: ["string", "max:255"])
+    ): Question
+        @guard
+
+    updateOrder(
+        id: ID! @rules(apply: ["exists:orders,id"])
+        name: String @rules(apply: ["string", "max:255"])
+        phone: String @rules(apply: ["string", "phone:EG"])
+    ): Order @guard 
+
+    deleteUser(id: ID! @rules(apply: ["exists:users,id"])): MessageResponse @guard
+
+    deleteQuestion(
+        id: ID! @rules(apply: ["exists:questions,id"])
+    ): MessageResponse @guard
+
+    deleteOrder(id: ID! @rules(apply: ["exists:orders,id"])): MessageResponse @guard
+
+    deleteAnswer(id: ID! @rules(apply: ["exists:answers,id"])): MessageResponse @guard
+}
