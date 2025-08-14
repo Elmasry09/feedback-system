@@ -39,7 +39,6 @@ An integrated project for automatically collecting customer feedback. The system
 3.  **Scheduled Task:** Every day at midnight, a scheduled task (`SendFeedbackRequests`) runs and performs the following:
     -   Fetches all orders completed on the previous day.
     -   For each order, a unique and secure token is generated to identify the customer.
-    -   Dispatches a job to the queue to send a message (SMS or Telegram).
 4.  **Message:** The message contains a unique link like `https://your-app.com/feedback`.
 5.  **Customer:** Upon clicking the link, the customer is directed to the feedback page (Vue.js) where the questions are displayed.
 6.  **Submitting Answers:** The customer submits their answers via a GraphQL Mutation, which receives the token and the answers to link them to the correct order in the database.
@@ -47,66 +46,78 @@ An integrated project for automatically collecting customer feedback. The system
 ## 📋 Installation & Setup
 
 1.  **Clone the project:**
-
     ```bash
     git clone https://github.com/Elmasry09/feedback-system.git
     cd feedback-system
     ```
 
-2.  **Install dependencies:**
+### Backend Setup
 
+1.  **Navigate to the backend directory and install dependencies:**
     ```bash
+    cd feedback-back-end
     composer install
-    npm install
     ```
 
-3.  **Set up the environment file (`.env`):**
-
+2.  **Set up the environment file (`.env`):**
     ```bash
     cp .env.example .env
     ```
-
-    Next, edit the `.env` file and add your database (MongoDB) and notification service (Twilio, Telegram) credentials.
+    Next, edit the `.env` file and add your database (MongoDB) and notification service (Twilio) credentials. You will need a Twilio account to get your `TWILIO_SID` and `TWILIO_TOKEN`.
 
     ```dotenv
     APP_NAME="Feedback System"
     APP_URL=http://localhost:8000
-
+ 
     DB_CONNECTION=mongodb
     MONGODB_URI=mongodb://127.0.0.1:27017
     MONGODB_DATABASE=feedback_system
-
-
+ 
+ 
     # Twilio Credentials
     TWILIO_SID=
     TWILIO_TOKEN=
-    TWILIO_FROM=
-
     ```
 
-4.  **Generate application key:**
-
+3.  **Generate application key and run migrations:**
     ```bash
     php artisan key:generate
-    ```
-
-5.  **Run database migrations:**
-
-    ```bash
     php artisan migrate
     ```
 
-6.  **Run the development environment:**
-    To run the server, run task schedule, and frontend bundler together:
-    run each service separately:
-
+4.  **Return to the project root directory:**
     ```bash
-    # Terminal 1: Laravel Server
-    php artisan serve
+    cd ..
+    ```
 
-    # Terminal 2: Vite Frontend Server
-    npm run dev
+### Frontend Setup
 
-    # Terminal 3: task schedule # if you using Windows os run this command and first command from wsl #
-    php artisan schedule:run-cronless
+1.  **Navigate to the frontend directory and install dependencies:**
+    ```bash
+    cd feedback-front-end
+    npm install
+    ```
+
+2.  **Return to the project root directory:**
+    ```bash
+    cd ..
+    ```
+
+### Running the Development Environment
+To run the application, you will need to open three separate terminal windows **from the project root (`feedback-system`)**.
+
+1.  **Run the Backend Server:**
+    ```bash
+    cd feedback-back-end && php artisan serve
+    ```
+
+2.  **Run the Frontend Server (Vite):**
+    ```bash
+    cd feedback-front-end && npm run dev
+    ```
+
+3.  **Run the Task Scheduler:**
+    ```bash
+    # If you are using Windows OS, run all development environment commands from WSL.
+    cd feedback-back-end && php artisan schedule:run-cronless
     ```
