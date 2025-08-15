@@ -1,5 +1,7 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
+import { useAuthStore } from '../../stores/auth'
+const auth = useAuthStore();
 </script>
 <template>
 
@@ -11,7 +13,7 @@ import { RouterLink, RouterView } from 'vue-router'
                     <div class="flex items-center space-x-12">
                         <span class="text-2xl font-bold tracking-tighter">Feedback</span>
                         <div class="hidden md:flex space-x-8">
-                            <router-link to="/">
+                            <router-link :to="{ name: 'home' }">
                                 <a
                                     class="text-sm font-medium hover:text-black/60 transition-colors duration-300 relative group">
                                     Home
@@ -19,10 +21,18 @@ import { RouterLink, RouterView } from 'vue-router'
                                         class="absolute bottom-0 left-0 w-0 h-px bg-black transition-all duration-300 group-hover:w-full"></span>
                                 </a>
                             </router-link>
+                            <router-link :to="{ name: 'feedback' }">
+                                <a
+                                    class="text-sm font-medium hover:text-black/60 transition-colors duration-300 relative group">
+                                    Feedback
+                                    <span
+                                        class="absolute bottom-0 left-0 w-0 h-px bg-black transition-all duration-300 group-hover:w-full"></span>
+                                </a>
+                            </router-link>
                         </div>
                     </div>
-                    <div class="hidden md:block">
-                        <router-link to="/login">
+                    <div v-if="!auth.isLoggedIn" class="hidden md:block">
+                        <router-link :to="{ name: 'login' }">
                             <button
                                 class="px-6 py-2 border border-black rounded-full text-sm font-medium hover:bg-black hover:text-white transition-all duration-300">
                                 Login

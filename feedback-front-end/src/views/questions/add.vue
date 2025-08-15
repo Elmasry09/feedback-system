@@ -57,7 +57,7 @@ const submit = async () => {
             `,
             variables: { text: question.value }
         });
-        router.push('/questions');
+        router.push({ name: 'questions' , state: { refresh: true } });
         Swal.fire({
             icon: 'success',
             title: 'Success',

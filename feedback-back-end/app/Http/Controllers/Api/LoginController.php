@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
-use Tymon\JWTAuth\Facades\JWTAuth;
+use App\Http\Requests\ProfileUpdateRequest;
 
 class LoginController extends Controller
 {
@@ -78,13 +79,45 @@ class LoginController extends Controller
                 'status' => 200,
                 'message' => 'Login successful',
                 'data' => $data,
-            ], 200)->withCookie(cookie()->forever('token', $token));
+            ], 200);
         }
 
         return response()->json([
             'status' => 401,
             'message' => 'Invalid credentials',
         ], 401);
+    }
+
+    public function update(ProfileUpdateRequest $request)
+    {
+        $user = Auth::user();
+        $validatedData = $request->validated();
+        $validatedData = array_filter($validatedData, function ($value) {
+            return !is_null($value) && $value !== '';
+        });
+
+        if ($request->filled('old_password')) {
+            $request->validate([
+                'old_password' => 'required',
+                'password' => 'required|min:8|confirmed'
+            ]);
+
+            if (!Hash::check($request->old_password, $user->password)) {
+                return response()->json([
+                    'status' => 401,
+                    'message' => 'Invalid old password',
+                ], 401);
+            }
+            $validatedData['password'] = Hash::make($request->password);
+        } else {
+            unset($validatedData['password']);
+        }
+        $user->update($validatedData);
+        return response()->json([
+            'status' => 200,
+            'message' => 'User updated successfully',
+            'user' => $user
+        ], 200);
     }
 
     public function logout(Request $request)

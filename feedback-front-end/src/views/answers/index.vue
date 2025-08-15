@@ -32,10 +32,12 @@
           </tr>
         </tbody>
       </table>
+
+      <loadingComponent v-if="loading" />
+      <noContent v-if="noData" word="answers" />
     </div>
 
     <AnswerModal :visible="showModal" :answer="selectedAnswer" @close="showModal = false" />
-
 
   </AuthenticatedLayout>
 </template>
@@ -50,6 +52,8 @@ import { useQuery, useApolloClient } from '@vue/apollo-composable'
 import Swal from 'sweetalert2'
 import { useRouter } from 'vue-router'
 import { watch } from 'vue';
+import noContent from '@/components/noContent.vue';
+import loadingComponent from '@/components/loading.vue';
 
 
 const { client } = useApolloClient()
@@ -83,15 +87,24 @@ const AnswersQuery = gql`
   }
 `
 
+const noData = ref(false);
 const { result, loading, error, refetch } = useQuery(AnswersQuery)
 const answers = computed(() => result.value?.answers || [])
 
 watch(error, () => {
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: error.value.message,
-    });
+  Swal.fire({
+    icon: 'error',
+    title: 'Error',
+    text: error.value.message,
+  });
+})
+
+watch(result, () => {
+    if (result.value?.answers.length === 0) {
+        noData.value = true;
+    } else {
+        noContent.value = false;
+    }
 })
 
 const deleteAnswer = async (id) => {

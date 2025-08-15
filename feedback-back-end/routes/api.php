@@ -14,7 +14,6 @@ Route::controller(LoginController::class)->group(function() {
     Route::post('login','login');
     Route::post('logout','logout')->middleware('auth:api');
     Route::post('refresh','refresh')->middleware('auth:api');
+    Route::post('update','update')->middleware('auth:api');
 });
-
-
 

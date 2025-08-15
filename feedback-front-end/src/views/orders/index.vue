@@ -3,13 +3,11 @@
         <div class="relative overflow-x-auto">
             <div class="flex justify-end mb-4">
                 <router-link to="/add-order">
-
                     <button class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700 transition">
                         Add Order
                     </button>
                 </router-link>
             </div>
-
             <table class="w-full table-fixed text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                 <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                     <tr>
@@ -39,7 +37,11 @@
                         <td class="px-6 py-4">
                             {{ new Date(order.created_at).toLocaleDateString() }}
                         </td>
-                        <td class="px-6 py-4">
+                        <td class="px-6 py-4 space-x-2">
+                            <button @click="openModal(order)"
+                                class="bg-blue-500 text-white px-3 py-1 rounded-md text-xs md:text-sm">
+                                Edit
+                            </button>
                             <button @click="deleteOrder(order.id)"
                                 class="bg-red-500 text-white px-3 py-1 rounded-md text-xs md:text-sm">
                                 Delete
@@ -48,6 +50,10 @@
                     </tr>
                 </tbody>
             </table>
+            <edit :visible="showModal" :order="selectedOrder" @updated="handleOrderUpdate" @close="showModal = false" />
+            <loadingComponent v-if="loading" />
+            <noContent v-if="noData" word="orders" />
+
         </div>
     </AuthenticatedLayout>
 </template>
@@ -63,6 +69,10 @@ import { useMutation } from '@vue/apollo-composable'
 import { useApolloClient } from '@vue/apollo-composable'
 import Swal from 'sweetalert2';
 import { useRouter } from 'vue-router';
+import { ref } from 'vue';
+import noContent from '@/components/noContent.vue';
+import loadingComponent from '@/components/loading.vue';
+import edit from './edit.vue';
 
 
 const { client } = useApolloClient()
@@ -77,8 +87,21 @@ query Orders {
     }
 }`;
 
-const router = useRouter();
+const showModal = ref(false)
+const selectedOrder = ref(null)
 
+const openModal = (order) => {
+    selectedOrder.value = order
+    showModal.value = true
+}
+
+const handleOrderUpdate = () => {
+    showModal.value = false;
+    refetch();
+};
+
+const router = useRouter();
+const noData = ref(false);
 const { result, loading, error, refetch } = useQuery(OrdersQuery);
 const orders = computed(() => result.value?.orders || []);
 
@@ -88,6 +111,14 @@ watch(error, () => {
         title: 'Error',
         text: error.value.message,
     });
+})
+
+watch(result, () => {
+    if (result.value?.orders.length === 0) {
+        noData.value = true;
+    } else {
+        noContent.value = false;
+    }
 })
 
 
@@ -121,6 +152,10 @@ const deleteOrder = async (id) => {
 
 
 onMounted(() => {
+    if (router.options.history.state.refresh) {
+        refetch();
+        router.options.history.state.refresh = false;
+    }
     initFlowbite();
 })
 

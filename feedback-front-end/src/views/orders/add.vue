@@ -13,9 +13,9 @@
                             <div class="grid gap-y-4">
                                 <div>
                                     <label for="name"
-                                        class="block text-sm font-bold ml-1 mb-2 dark:text-white">Name</label>
+                                        class="block text-sm font-bold ml-1 mb-2 dark:text-white">Order Name</label>
                                     <div class="relative">
-                                        <input type="text" v-model="order.name" placeholder="John Doe"
+                                        <input type="text" v-model="order.name" placeholder="Order Name"
                                             class="py-3 px-4 block w-full border-2 border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 shadow-sm"
                                             required>
                                     </div>
@@ -70,7 +70,7 @@ const submit = async () => {
             `,
             variables: { name: order.value.name, phone: order.value.phone }
         });
-        router.push('/orders');
+        router.push({ name: 'orders' , state: { refresh: true } });
         Swal.fire({
             icon: 'success',
             title: 'Success',

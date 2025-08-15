@@ -17,7 +17,7 @@ An integrated project for automatically collecting customer feedback. The system
 - **Question Management Dashboard:** An interface for the administrator (Admin) to add, edit, and delete the questions sent to customers.
 - **Dual Authentication System:** Uses session-based authentication for the admin panel and JWT for securing the GraphQL API.
 - **Scheduled Task:** Runs daily to send feedback links to customers who completed their orders on the previous day.
-- **Multi-Channel Notifications:** Ability to send notifications via Twilio (SMS) and Telegram.
+- **Notifications:** Ability to send messages via Twilio (whatsapp).
 - **Interactive Customer Interface:** A simple and straightforward page for customers to answer questions without needing to log in.
 - **Flexible API:** Uses GraphQL to facilitate data handling between the frontend and backend.
 - **Background Processing (Queues):** Utilizes Laravel Queues to process message sending efficiently and prevent system performance delays.
@@ -89,7 +89,13 @@ An integrated project for automatically collecting customer feedback. The system
     php artisan migrate
     ```
 
-4.  **Return to the project root directory:**
+4.  **Create user:**
+
+    ```bash
+    php artisan db:seed
+    ```
+
+5.  **Return to the project root directory:**
     ```bash
     cd ..
     ```

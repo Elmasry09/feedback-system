@@ -33,7 +33,11 @@
                         <td class="px-6 py-4">
                             {{ new Date(question.created_at).toLocaleDateString() }}
                         </td>
-                        <td class="px-6 py-4">
+                        <td class="px-6 py-4 space-x-2">
+                            <button @click="openModal(question)"
+                                class="bg-blue-500 text-white px-3 py-1 rounded-md text-xs md:text-sm">
+                                Edit
+                            </button>
                             <button @click="deleteQuestion(question.id)"
                                 class="bg-red-500 text-white px-3 py-1 rounded-md text-xs md:text-sm">
                                 Delete
@@ -42,9 +46,13 @@
                     </tr>
                 </tbody>
             </table>
+
+            <edit :visible="showModal" :question="selectedQuestion" @close="showModal = false"
+                @updated="handleQuestionUpdate" />
+            <loadingComponent v-if="loading" />
+            <noContent v-if="noData" word="questions" />
+
         </div>
-
-
 
     </AuthenticatedLayout>
 </template>
@@ -61,6 +69,10 @@ import { useApolloClient } from '@vue/apollo-composable'
 import Swal from 'sweetalert2';
 import { useRouter } from 'vue-router';
 import { watch } from 'vue';
+import { ref } from 'vue';
+import noContent from '@/components/noContent.vue';
+import loadingComponent from '@/components/loading.vue';
+import edit from './edit.vue';
 
 const { client } = useApolloClient()
 
@@ -73,8 +85,21 @@ query Questions {
     }
 }`;
 
-const router = useRouter();
+const showModal = ref(false);
+const selectedQuestion = ref(null);
 
+const openModal = (question) => {
+    selectedQuestion.value = question;
+    showModal.value = true;
+};
+
+const handleQuestionUpdate = () => {
+    showModal.value = false;
+    refetch();
+};
+
+const router = useRouter();
+const noData = ref(false);
 const { result, loading, error, refetch } = useQuery(questionsQuery);
 const questions = computed(() => result.value?.questions || []);
 
@@ -86,6 +111,15 @@ watch(error, () => {
     });
 
 })
+
+watch(result, () => {
+    if (result.value?.questions.length === 0) {
+        noData.value = true;
+    } else {
+        noContent.value = false;
+    }
+})
+
 
 const deleteQuestion = async (id) => {
     try {
@@ -115,8 +149,11 @@ const deleteQuestion = async (id) => {
 
 };
 
-
 onMounted(() => {
+    if (router.options.history.state.refresh) {
+        refetch();
+        router.options.history.state.refresh = false;
+    }
     initFlowbite();
 })
 
