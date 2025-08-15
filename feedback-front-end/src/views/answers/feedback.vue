@@ -5,21 +5,20 @@
             <loadingComponent v-if="loading" />
             <noContent v-if="noData" word="questions" />
 
-
             <form @submit.prevent="submit" v-if="questions.length > 0" class="space-y-6">
                 <div class="bg-white shadow-md rounded p-4">
-                    <label class="block text-gray-700 font-medium mb-2">
+                    <label class="block text-sm font-medium mb-2 dark:text-white">
                         Phone
                     </label>
                     <input type="text" v-model="phone" placeholder="Enter your phone number"
-                        class="w-full border border-gray-300 rounded px-3 py-2" />
+                        class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400 dark:focus:ring-gray-600" />
 
                     <div v-for="(question, index) in questions" :key="question.id" class="mt-4">
-                        <label class="block text-gray-700 font-medium mb-2">
+                        <label class="block text-sm font-medium mb-2 dark:text-white">
                             {{ question.text }}
                         </label>
                         <input type="text" v-model="answers[index].answer" placeholder="Your answer here"
-                            class="w-full border border-gray-300 rounded px-3 py-2" />
+                            class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400 dark:focus:ring-gray-600   " />
                     </div>
                 </div>
 

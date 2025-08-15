@@ -15,10 +15,12 @@
                                 </path>
                             </svg>
                         </button>
-                        <a href="https://flowbite.com" class="flex ms-2 md:me-24">
-                            <span
-                                class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">Feedback</span>
-                        </a>
+                        <router-link :to="{ name: 'home' }">
+                            <a class="flex ms-2 md:me-24">
+                                <span
+                                    class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">Feedback</span>
+                            </a>
+                        </router-link>
                     </div>
                     <div class="">
                     </div>
@@ -140,7 +142,7 @@
             </div>
         </aside>
 
-        <div class="p-4 sm:ml-64 mt-14 bg-gray-100 dark:bg-gray-800 min-h-screen">
+        <div class="p-4 sm:ml-64 mt-14 bg-slate-100 dark:bg-gray-800 min-h-screen">
             <slot />
         </div>
     </div>

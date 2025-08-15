@@ -2,7 +2,7 @@
     <AuthenticatedLayout>
         <main id="content" role="main" class="w-full  max-w-md mx-auto p-6">
             <div
-                class="mt-7 bg-white  rounded-xl shadow-lg dark:bg-gray-800 dark:border-gray-700 border-2 border-indigo-300">
+                class="mt-7 bg-white  rounded-xl shadow-lg dark:bg-gray-800 dark:border-gray-700 border-2">
                 <div class="p-4 sm:p-7">
                     <div class="text-center">
                         <h1 class="block text-2xl font-bold text-gray-800 dark:text-white">Add Order </h1>
@@ -13,19 +13,19 @@
                             <div class="grid gap-y-4">
                                 <div>
                                     <label for="name"
-                                        class="block text-sm font-bold ml-1 mb-2 dark:text-white">Order Name</label>
+                                        class="block text-sm font-medium mb-2 dark:text-white">Order Name</label>
                                     <div class="relative">
                                         <input type="text" v-model="order.name" placeholder="Order Name"
-                                            class="py-3 px-4 block w-full border-2 border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 shadow-sm"
+                                            class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400 dark:focus:ring-gray-600"
                                             required>
                                     </div>
                                 </div>
                                 <div>
                                     <label for="phone"
-                                        class="block text-sm font-bold ml-1 mb-2 dark:text-white">Phone</label>
+                                        class="block text-sm font-medium mb-2 dark:text-white">Phone</label>
                                     <div class="relative">
                                         <input type="text" v-model="order.phone" placeholder="123-456-7890"
-                                            class="py-3 px-4 block w-full border-2 border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 shadow-sm"
+                                            class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400 dark:focus:ring-gray-600"
                                             required>
                                     </div>
                                 </div>
