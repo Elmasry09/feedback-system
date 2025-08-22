@@ -3,9 +3,9 @@
 namespace App\Console\Commands;
 
 use App\Models\Order;
-use Carbon\Carbon;
-use Illuminate\Console\Command;
+use App\Models\Message;
 use Twilio\Rest\Client;
+use Illuminate\Console\Command;
 
 class SendMessages extends Command
 {
@@ -28,8 +28,7 @@ class SendMessages extends Command
      */
     public function handle()
     {
-        $previousDay = Carbon::yesterday();
-        $orders = Order::whereDate('created_at', $previousDay)->get();
+        $orders = Order::doesntHave('message')->get();
 
         $sid = env('TWILIO_SID');
         $token  = env('TWILIO_TOKEN');
@@ -37,18 +36,20 @@ class SendMessages extends Command
         foreach ($orders as $order) {
             try {
                 $message = $twilio->messages
-                    ->create('whatsapp:+2'. $order->phone, // send to
+                    ->create(
+                        'whatsapp:+2' . $order->phone, // send to
                         [
                             'from' => 'whatsapp:+14155238886',
-                            'body' => 'hello '. $order->name,
+                            'body' => "Hello dear {$order->name}, we hope you have a nice day. If you don't mind, we were hoping you would answer some of our questions. Thank you for your time and support. We really appreciate it.   
+To answer, click here. http://localhost:5173/feedback/" . $order->slug
                         ]
                     );
-                sleep(5);
-                $updated = $twilio->messages($message->sid)->fetch();
-                logger()->info("Message sent to {$order->name} with status: {$updated->status}");
-
+                $sendMessage = Message::create([
+                    'order_id' => $order->id,
+                    'message_sid' => $message->sid
+                ]);
             } catch (\Exception $e) {
-                logger()->error("Failed to send message to {$order->name}: ". $e->getMessage());
+                logger()->error("Failed to send message to {$order->name}: " . $e->getMessage());
             }
         }
     }

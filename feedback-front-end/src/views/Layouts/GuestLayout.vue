@@ -1,12 +1,11 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterLink } from 'vue-router'
 import { useAuthStore } from '../../stores/auth'
 const auth = useAuthStore();
 </script>
 <template>
 
     <body class="bg-white text-black font-framer antialiased overflow-x-hidden">
-        <!-- Navigation -->
         <nav class="fixed w-full z-50 bg-white/90 backdrop-blur-sm border-b border-black/5">
             <div class="max-w-7xl mx-auto px-6 py-4">
                 <div class="flex items-center justify-between">
@@ -17,14 +16,6 @@ const auth = useAuthStore();
                                 <a
                                     class="text-sm font-medium hover:text-black/60 transition-colors duration-300 relative group">
                                     Home
-                                    <span
-                                        class="absolute bottom-0 left-0 w-0 h-px bg-black transition-all duration-300 group-hover:w-full"></span>
-                                </a>
-                            </router-link>
-                            <router-link :to="{ name: 'feedback' }">
-                                <a
-                                    class="text-sm font-medium hover:text-black/60 transition-colors duration-300 relative group">
-                                    Feedback
                                     <span
                                         class="absolute bottom-0 left-0 w-0 h-px bg-black transition-all duration-300 group-hover:w-full"></span>
                                 </a>
@@ -50,14 +41,11 @@ const auth = useAuthStore();
             </div>
         </nav>
 
-
         <div class="p-4 mt-14 m-auto dark:bg-gray-800 min-h-screen pb-20">
             <slot />
         </div>
 
-
-        <!-- Footer -->
-        <footer class="bg-white py-10 w-full">
+        <footer class="bg-white py-4 w-full">
             <div class="max-w-7xl mx-auto">
                 <div class="pt-3 border-t border-black/5 flex flex-col md:flex-row justify-between items-center">
                     <p class="text-xs text-black/40">© 2023 Studio. All rights reserved.</p>

@@ -4,7 +4,6 @@ namespace App\Models;
 
 use MongoDB\Laravel\Eloquent\Model;
 use MongoDB\Laravel\Relations\BelongsTo;
-use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class Question extends Model 
 {   

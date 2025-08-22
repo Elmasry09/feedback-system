@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Answer;
+use App\Models\Order;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -13,10 +15,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::create([
-            'name' => 'user',
-            'email' => 'user@gmail.com',
-            'password' => bcrypt('12345678'), // Ensure the password is hashed
-        ]);
+        $fake = \Faker\Factory::create();
+        for ($i=0 ; $i < 120 ; $i++) { 
+            $ordersIds = Order::doesntHave('answer')->get()->pluck('id')->toArray();
+            Answer::create([
+                'order_id' => $fake->randomElement($ordersIds),
+                'phone' => $fake->phoneNumber,
+                'created_at' => $fake->dateTimeThisYear()
+            ]);
+        }
     }
 }

@@ -37,13 +37,8 @@ export const useAuthStore = defineStore("auth", {
     },
 
     async logout() {
-      const token = localStorage.getItem("jwt_token");
       try {
-        const response = await apiClient.post("/logout", null, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await apiClient.post("/logout", null);
         this.authUser = null;
         this.isAuthenticated = false;
         localStorage.removeItem("jwt_token");
@@ -59,11 +54,7 @@ export const useAuthStore = defineStore("auth", {
     async update(user) {
       const token = localStorage.getItem("jwt_token");
       try {
-        const response = await apiClient.post("/update", user, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await apiClient.post("/update", user);
         this.authUser = response.data.user;
         return response.status;
       } catch (error) {

@@ -1,9 +1,11 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\GraphQL\Mutations;
 
 use App\Models\Order;
-use Illuminate\Support\Facades\Auth;
+use App\Services\ImageService;
 
 final readonly class UpdateOrder
 {
@@ -11,11 +13,12 @@ final readonly class UpdateOrder
     public function __invoke(null $_, array $args)
     {
         $order = Order::find($args['id']);
+        if (isset($args['image'])) {
+            $args['image'] = ImageService::uploadImage($args['image'], 'orders');
+            ImageService::deleteImage($order->image);
+        }
 
-        $user = Auth::user();
-        $args['updated_by'] = $user->id;
         $order->update($args);
-
         return $order;
     }
 }

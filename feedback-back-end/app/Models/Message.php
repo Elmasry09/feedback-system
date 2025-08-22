@@ -4,9 +4,8 @@ namespace App\Models;
 
 use MongoDB\Laravel\Eloquent\Model;
 use MongoDB\Laravel\Relations\BelongsTo;
-use MongoDB\Laravel\Relations\HasMany;
 
-class Answer extends Model
+class Message extends Model
 {
     protected $connection = 'mongodb';
 
@@ -16,10 +15,4 @@ class Answer extends Model
     {
         return $this->belongsTo(Order::class);
     }
-
-    public function answersQuestions(): HasMany
-    {
-        return $this->hasMany(AnswerQuestion::class);
-    }
-
 }

@@ -20,7 +20,7 @@
             <strong>Order Name:</strong> {{ answer?.order?.name || '—' }}
           </p>
           <p class="text-base text-gray-800 dark:text-white">
-            <strong>Order Phone:</strong> {{ answer?.order?.phone || '—' }}
+            <strong>Order Phone:</strong> {{ answer?.phone || '—' }}
           </p>
           <p class="text-base text-gray-800 dark:text-white">
             <strong>Created at</strong> {{ formattedDate }}

@@ -10,7 +10,6 @@ final readonly class DeleteUser
     public function __invoke(null $_, array $args)
     {
         $user = User::find($args['id']);
-        
         $user->delete();
 
         return ['message' => 'User deleted successfully'];

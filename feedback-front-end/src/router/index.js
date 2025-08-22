@@ -9,6 +9,8 @@ import orders from "../views/orders/index.vue";
 import addOrder from "../views/orders/add.vue";
 import feedback from "@/views/answers/feedback.vue";
 import profile from "@/views/profile.vue";
+import NotFound from "@/views/404.vue";
+import Dashbord from "@/views/Dashbord.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -17,7 +19,13 @@ const router = createRouter({
       path: "/",
       name: "home",
       component: HomeView,
-      meta: { title: "Home" },
+      meta: { title: "Home" }
+    },
+    {
+      path: "/dashbord",
+      name: "dashbord",
+      component: Dashbord,
+      meta: { requiresAuth: true, title: "Dashbord" }
     },
     {
       path: "/login",
@@ -62,10 +70,15 @@ const router = createRouter({
       meta: { requiresAuth: true, title: "Add Order" },
     },
     {
-      path: "/feedback",
+      path: "/feedback/:slug",
       name: "feedback",
       component: feedback,
       meta: { title: "Feedback" },
+    },
+    {
+      path: "/:pathMatch(.*)*",
+      name: "NotFound",
+      component: NotFound,
     },
   ],
 });

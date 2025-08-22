@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use MongoDB\Laravel\Eloquent\Model;
+use MongoDB\Laravel\Relations\BelongsTo;
 
 class AnswerQuestion extends Model
 {
@@ -17,7 +18,7 @@ class AnswerQuestion extends Model
         return $this->belongsTo(Question::class);
     }
 
-    public function answer()
+    public function answer() : BelongsTo
     {
         return $this->belongsTo(Answer::class);
     }

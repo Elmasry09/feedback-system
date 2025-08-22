@@ -16,7 +16,6 @@ final readonly class UpdateUser
         }
 
         $user->update($args);
-
         return $user;
     }
 }

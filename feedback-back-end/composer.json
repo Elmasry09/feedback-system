@@ -8,13 +8,13 @@
     "require": {
         "php": "^8.2",
         "inertiajs/inertia-laravel": "^2.0",
-        "laravel-notification-channels/telegram": "^6.0",
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
         "mongodb/laravel-mongodb": "^5.4",
         "nuwave/lighthouse": "^6.62",
         "propaganistas/laravel-phone": "^6.0",
+        "spatie/laravel-sluggable": "^3.7",
         "tightenco/ziggy": "^2.0",
         "twilio/sdk": "^8.7",
         "tymon/jwt-auth": "^2.2"

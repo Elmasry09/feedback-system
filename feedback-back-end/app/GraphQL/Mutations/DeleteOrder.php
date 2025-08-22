@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\GraphQL\Mutations;
 
 use App\Models\Order;
+use App\Models\Answer;
+use App\Services\ImageService;
 
 final readonly class DeleteOrder
 {
@@ -13,15 +15,14 @@ final readonly class DeleteOrder
     {
         $order = Order::find($args['id']);
 
-        if ($order->answers()->count() > 0) {
-            $answers = $order->answers;
-            foreach ($answers as $answer) {
-                $answer->answersQuestions()->delete();
-            }
+        $answer = Answer::where('order_id', $args['id'])->first();
+
+        if ($answer) {
+            $answer->answersQuestions()->delete();
+            $order->answer()->delete();
         }
-
-        $order->answers()->delete();
-
+        
+        ImageService::deleteImage($order->image);
         $order->delete();
 
         return ['message' => 'Order deleted successfully'];

@@ -1,17 +1,44 @@
 "A datetime string with format `Y-m-d H:i:s`, e.g. `2018-05-23 13:43:32`."
 scalar DateTime
     @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
-
+scalar Upload
+    @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Upload")
 "Indicates what fields are available at the top level of a query operation."
 type Query {
     users: [User!]! @all @guard
     user(id: ID! @eq): User @find @guard
-    questions: [Question!]! @all
+    questions: [Question!]! @paginate(type: PAGINATOR) @orderBy(column: "created_at", direction: DESC) @guard
+    allquestions: [Question!]! @all @guard
     question(id: ID! @eq): Question @find @guard
-    answers: [Answer!]! @all @guard
+    answers: [Answer!]! @paginate(type: PAGINATOR) @orderBy(column: "created_at", direction: DESC) @guard
     answer(id: ID! @eq): Answer @find @guard
-    order(id: ID! @eq): Order @find @guard
-    orders: [Order!]! @all @guard
+    order(slug: String! @eq): Order @find
+    orders: [Order!]! @paginate(type: PAGINATOR) @guard @orderBy(column: "created_at", direction: DESC) 
+    monthlyOrders: [MonthlyOrder!]! @guard
+    percentageStatistics: PercentageStatistics @guard
+    ordersStatistics: OrdersStatistics @guard
+}
+
+type OrdersStatistics {
+    ordersHasAnswer: Int!
+    ordersDosentHaveAnswer: Int!
+}
+
+type PercentageItem {
+    currentMonth: Int!
+    percentage: Float!
+    status: String!
+}
+
+type PercentageStatistics {
+    ordersPercentage: PercentageItem!
+    answersPercentage: PercentageItem!
+}
+
+
+type MonthlyOrder {
+    month: String!
+    total: Int!
 }
 
 type User {
@@ -24,9 +51,10 @@ type User {
 type Question {
     id: ID!
     text: String!
+    type: String!
+    choices: [String!]
     user_id: ID
     user: User @belongsTo
-    updated_by: ID
     created_at: DateTime!
     updated_at: DateTime!
 }
@@ -35,9 +63,11 @@ type Order {
     id: ID!
     name: String!
     phone: String!
+    product_name: String
+    slug: String
+    image: String
     user_id: ID
     user: User @belongsTo
-    updated_by: ID
     created_at: DateTime!
     updated_at: DateTime!
 }
@@ -45,6 +75,7 @@ type Order {
 type Answer {
     id: ID!
     order_id: ID!
+    phone: String
     created_at: DateTime!
     updated_at: DateTime!
     answersQuestions: [AnswerQuestion!]! @hasMany
@@ -54,7 +85,7 @@ type Answer {
 type AnswerQuestion {
     id: ID!
     answer_id: ID!
-    text_answer: String!
+    text_answer: String
     question_id: ID!
     question: Question @belongsTo
     created_at: DateTime!
@@ -62,8 +93,9 @@ type AnswerQuestion {
 }
 
 input AnswerInput {
-    question_id: ID! 
-    answer: String! 
+    question_id: ID!
+    type: String!
+    answer: String!
 }
 
 type MessageResponse {
@@ -73,11 +105,15 @@ type MessageResponse {
 type Mutation {
     createUser(name: String!, email: String!, password: String!): User
 
-    createQuestion(text: String!): Question @guard 
+    createQuestion(
+        text: String!
+        type: String! @rules(apply: ["in:rating,choice,text"])
+        choices: [String!]
+    ): Question @guard
 
-    createOrder(name: String!, phone: String!): Order @guard
+    createOrder(name: String!, phone: String!, image: Upload, product_name: String!): Order @guard
 
-    createAnswer(phone: String!, answersQuestions: [AnswerInput!]!): Answer
+    createAnswer(phone: String, answersQuestions: [AnswerInput!]!, order_id: ID!): Answer
 
     updateUser(
         id: ID! @rules(apply: ["exists:users,id"])
@@ -90,22 +126,28 @@ type Mutation {
     updateQuestion(
         id: ID! @rules(apply: ["exists:questions,id"])
         text: String @rules(apply: ["string", "max:255"])
-    ): Question
-        @guard
+        type: String @rules(apply: ["in:rating,choice,text"])
+        choices: [String!]
+    ): Question @guard
 
     updateOrder(
         id: ID! @rules(apply: ["exists:orders,id"])
         name: String @rules(apply: ["string", "max:255"])
         phone: String @rules(apply: ["string", "phone:EG"])
-    ): Order @guard 
+        product_name: String @rules(apply: ["string", "max:255"])
+        image: Upload @rules(apply: ["image","mimes:jpeg,png,jpg,gif,svg","max:6048"])
+    ): Order @guard
 
-    deleteUser(id: ID! @rules(apply: ["exists:users,id"])): MessageResponse @guard
+    deleteUser(id: ID! @rules(apply: ["exists:users,id"])): MessageResponse
+        @guard
 
     deleteQuestion(
         id: ID! @rules(apply: ["exists:questions,id"])
     ): MessageResponse @guard
 
-    deleteOrder(id: ID! @rules(apply: ["exists:orders,id"])): MessageResponse @guard
+    deleteOrder(id: ID! @rules(apply: ["exists:orders,id"])): MessageResponse
+        @guard
 
-    deleteAnswer(id: ID! @rules(apply: ["exists:answers,id"])): MessageResponse @guard
+    deleteAnswer(id: ID! @rules(apply: ["exists:answers,id"])): MessageResponse
+        @guard
 }
