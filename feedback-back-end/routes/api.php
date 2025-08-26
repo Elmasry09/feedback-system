@@ -2,9 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Console\Commands\SendMessages;
-use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\Api\LoginController;
+use App\Http\Controllers\SendMessagesController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -20,7 +19,4 @@ Route::controller(LoginController::class)->group(function() {
     Route::post('update','update')->middleware('auth:api');
 });
 
-Route::post('/run-send-messages', function () {
-    Artisan::call(SendMessages::class); 
-    return response()->json(['message' => 'Send Messages command executed manually']);
-})->middleware('auth:api');
+Route::post('/run-send-messages', SendMessagesController::class)->middleware('auth:api');

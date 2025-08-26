@@ -15,14 +15,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $fake = \Faker\Factory::create();
-        for ($i=0 ; $i < 120 ; $i++) { 
-            $ordersIds = Order::doesntHave('answer')->get()->pluck('id')->toArray();
-            Answer::create([
-                'order_id' => $fake->randomElement($ordersIds),
-                'phone' => $fake->phoneNumber,
-                'created_at' => $fake->dateTimeThisYear()
-            ]);
-        }
+        User::create([
+            'name' => 'user',
+            'email' => 'user@gmail.com',
+            'password' => bcrypt('12345678'), // Ensure the password is hashed
+        ]);
     }
 }

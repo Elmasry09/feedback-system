@@ -1,38 +1,27 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\Message;
 use Twilio\Rest\Client;
-use Illuminate\Console\Command;
+use Illuminate\Http\Request;
 
-class SendMessages extends Command
+class SendMessagesController extends Controller
 {
     /**
-     * The name and signature of the console command.
-     *
-     * @var string
+     * Handle the incoming request.
      */
-    protected $signature = 'app:Send-Messages';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Send WhatsApp messages to customers';
-
-    /**
-     * Execute the console command.
-     */
-    public function handle()
+    public function __invoke(Request $request)
     {
         $orders = Order::doesntHave('message')->get();
 
         $sid = env('TWILIO_SID');
         $token  = env('TWILIO_TOKEN');
         $twilio = new Client($sid, $token);
+        if (!$orders) {
+            return response()->json(['message' => 'No new orders to send messages to.'], 200);
+        }
         foreach ($orders as $order) {
             try {
                 $message = $twilio->messages
@@ -43,13 +32,14 @@ class SendMessages extends Command
                             'body' => "Hello dear {$order->name}, we hope you have a nice day. If you don't mind, we were hoping you would answer some of our questions. Thank you for your time and support. We really appreciate it. To answer, click here. http://localhost:5173/feedback/" . $order->slug
                         ]
                     );
+                $sendMessage = Message::create([
+                    'order_id' => $order->id,
+                    'message_sid' => $message->sid
+                ]);
             } catch (\Exception $e) {
                 logger()->error("Failed to send message to {$order->name}: " . $e->getMessage());
             }
-            $sendMessage = Message::create([
-                'order_id' => $order->id,
-                'message_sid' => $message->sid
-            ]);
         }
+        return response()->json(['message' => 'Messages sent successfully.'], 200);
     }
 }

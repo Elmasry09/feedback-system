@@ -31,7 +31,7 @@ final readonly class CreateOrder
         $order = Order::create([
             'name' => $args['name'],
             'phone' => $args['phone'],
-            'image' => $args['image'],
+            'image' => $args['image'] ?? null,
             'product_name' => $args['product_name'],
             'user_id' => $user->id
         ]);

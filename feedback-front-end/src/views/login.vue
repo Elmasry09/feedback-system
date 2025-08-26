@@ -60,7 +60,7 @@ const form = ref({
 const submit = async () => {
     const success = await auth.login(form.value);
     if (success === 200) {
-        router.push({ name: "dashboard" });
+        router.push({ name: "dashbord" });
     }
 }
 
