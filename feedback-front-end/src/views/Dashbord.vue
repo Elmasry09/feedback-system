@@ -2,8 +2,9 @@
   <AuthenticatedLayout>
     <div class="grid grid-cols-12 gap-4 md:gap-6">
       <div class="col-span-12 space-y-6 xl:col-span-7">
-        <ecommerce-metrics :orders="{ count: 555 }" :answers="{ count: 2222 }" />
-        <monthly-sale />
+        <ecommerce-metrics :percentageStatistics="percentageStatistics" />
+        <monthly-sale :monthlyOrders = "monthlyOrders" />
+        <loadingComponent v-if="loading" />
       </div>
       <div class="col-span-12 xl:col-span-5">
         <answers-table :answers="answers" :see-all="true" @delete="handleDeleteAnswer" @refresh="refetch" :columns="[
@@ -14,7 +15,8 @@
       </div>
 
       <div class="col-span-12">
-        <statistics-chart />
+        <statistics-chart :ordersStatistics = "ordersStatistics"/>
+        <loadingComponent v-if="loading" />
       </div>
 
       <div class="col-span-12 xl:col-span-5">
@@ -51,7 +53,7 @@ import { useQuery } from '@vue/apollo-composable';
 import { computed, watch } from 'vue';
 
 const Querys = gql`
-query Orders {
+query {
     orders (first: 5) {
       data {
         id
@@ -87,11 +89,34 @@ query Orders {
         created_at
         }
     }
+    monthlyOrders {
+      month
+      total
+    }
+    percentageStatistics {
+      ordersPercentage {
+        percentage
+        status
+        currentMonth
+      }
+      answersPercentage {
+        percentage
+        status
+        currentMonth
+      }
+    }
+    ordersStatistics {
+      ordersHasAnswer
+      ordersDosentHaveAnswer
+    }
 }`;
 const { result, loading, error, refetch } = useQuery(Querys);
 const orders = computed(() => result.value?.orders?.data || []);
 const answers = computed(() => result.value?.answers?.data || []);
 const questions = computed(() => result.value?.questions?.data || []);
+const monthlyOrders = computed(() => result.value?.monthlyOrders || []);
+const percentageStatistics = computed(() => result.value?.percentageStatistics || []);
+const ordersStatistics = computed(() => result.value?.ordersStatistics || []);
 
 watch(error, () => {
   Swal.fire({

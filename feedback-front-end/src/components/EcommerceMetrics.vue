@@ -16,7 +16,7 @@
           <h4 class="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">{{ answers.currentMonth }}</h4>
         </div>
         <span
-          :class="[answers.status == 'increase' ? 'text-green-600 bg-green-100' : 'bg-red-50 text-red-600', 'flex items-center gap-1 rounded-full bg-error-50 py-0.5 pl-2 pr-2.5 text-sm font-medium']">
+          :class="[answers.status == 'decrease' ? 'bg-red-50 text-red-600' : 'text-green-600 bg-green-100', 'flex items-center gap-1 rounded-full bg-error-50 py-0.5 pl-2 pr-2.5 text-sm font-medium']">
           <svg v-if="answers.status == 'decrease'" class="fill-current" width="12" height="12" viewBox="0 0 12 12"
             fill="none" xmlns="http://www.w3.org/2000/svg">
             <path fill-rule="evenodd" clip-rule="evenodd"
@@ -49,9 +49,8 @@
           <span class="text-sm text-gray-500 dark:text-gray-400">Orders</span>
           <h4 class="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">{{ orders.currentMonth }}</h4>
         </div>
-
         <span
-          :class="[orders.status == 'increase' ? 'text-green-600 bg-green-100' : 'bg-red-50 text-red-600', 'flex items-center gap-1 rounded-full bg-error-50 py-0.5 pl-2 pr-2.5 text-sm font-medium']">
+          :class="[orders.status == 'decrease' ? 'bg-red-50 text-red-600' : 'text-green-600 bg-green-100', 'flex items-center gap-1 rounded-full bg-error-50 py-0.5 pl-2 pr-2.5 text-sm font-medium']">
           <svg v-if="orders.status == 'decrease'" class="fill-current" width="12" height="12" viewBox="0 0 12 12"
             fill="none" xmlns="http://www.w3.org/2000/svg">
             <path fill-rule="evenodd" clip-rule="evenodd"
@@ -71,46 +70,13 @@
   </div>
 </template>
 <script setup>
-import { ref, watch } from 'vue';
-import gql from 'graphql-tag'
-import { useQuery } from '@vue/apollo-composable'
-import Swal from 'sweetalert2'
+import { computed } from 'vue';
 
-const PERCENTAGE_STATS = gql`
-  query {
-    percentageStatistics {
-      ordersPercentage {
-        percentage
-        status
-        currentMonth
-      }
-      answersPercentage {
-        percentage
-        status
-        currentMonth
-      }
-    }
-  }
-`;
+const props = defineProps({
+  percentageStatistics: Object
+});
 
-
-const { result, loading, error } = useQuery(PERCENTAGE_STATS);
-
-const orders = ref([]);
-const answers = ref([]);
-
-watch(result, () => {
-  orders.value = result.value.percentageStatistics.ordersPercentage;
-  answers.value = result.value.percentageStatistics.answersPercentage;
-})
-
-watch(error, () => {
-  Swal.fire({
-    icon: 'error',
-    title: 'Percentage Statistics Error',
-    text: error.message,
-  });
-})
-
+const orders = computed(() => props.percentageStatistics?.ordersPercentage || { currentMonth: 0, percentage: 0, status: 'increase' });
+const answers = computed(() => props.percentageStatistics?.answersPercentage || { currentMonth: 0, percentage: 0, status: 'increase' });
 
 </script>

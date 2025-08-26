@@ -29,49 +29,23 @@
     </div>
     <div class="max-w-full overflow-x-auto custom-scrollbar">
       <div id="chartThree" class="-ml-4 min-w-[1000px] xl:min-w-full pl-2">
-        <VueApexCharts v-if="!loading" type="" height="310" :options="chartOptions" :series="series" />
-        <loadingComponent v-if="loading" />
+        <VueApexCharts height="310" :options="chartOptions" :series="series" />
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue'
-import { useQuery } from '@vue/apollo-composable'
-import gql from 'graphql-tag'
-import loadingComponent from './loading.vue'
-import Swal from 'sweetalert2'
+import { computed } from 'vue'
 
-const series = ref([]);
-
-const statisticsQuery = gql`
-  query {
-    ordersStatistics {
-      ordersHasAnswer
-      ordersDosentHaveAnswer
-    }
-  }
-`;
-
-const { result, loading, error } = useQuery(statisticsQuery);
-
-watch(result, () => {
-  if (result.value && result.value.ordersStatistics) {
-    series.value = [
-      result.value.ordersStatistics.ordersHasAnswer,
-      result.value.ordersStatistics.ordersDosentHaveAnswer
-    ]
-  }
-});
-
-watch(error, () => {
-  Swal.fire({
-    icon: 'error',
-    title: 'Statistics Error',
-    text: error.message
-  });
+const props = defineProps({
+  ordersStatistics: Object
 })
+
+const series = computed(() => [
+  props.ordersStatistics?.ordersHasAnswer || 0,
+  props.ordersStatistics?.ordersDosentHaveAnswer || 0
+]);
 
 const chartOptions = {
   chart: {
@@ -88,9 +62,7 @@ const chartOptions = {
   }],
 };
 
-
 </script>
-
 <style scoped>
 .area-chart {
   width: 100%;
