@@ -8,11 +8,11 @@ type Query {
     users: [User!]! @all @guard
     user(id: ID! @eq): User @find @guard
     questions: [Question!]! @paginate(type: PAGINATOR) @orderBy(column: "created_at", direction: DESC) @guard
-    allquestions: [Question!]! @all @guard
+    allquestions: [Question!]! @all
     question(id: ID! @eq): Question @find @guard
     answers: [Answer!]! @paginate(type: PAGINATOR) @orderBy(column: "created_at", direction: DESC) @guard
     answer(id: ID! @eq): Answer @find @guard
-    order(slug: String! @eq): Order @find
+    order(slug: String! @eq): Order @field(resolver: "App\\GraphQL\\Queries\\OrderQuery") 
     orders: [Order!]! @paginate(type: PAGINATOR) @guard @orderBy(column: "created_at", direction: DESC) 
     monthlyOrders: [MonthlyOrder!]! @guard
     percentageStatistics: PercentageStatistics @guard

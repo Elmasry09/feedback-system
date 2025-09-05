@@ -1,9 +1,9 @@
 <template>
     <GuestLayout>
-        <div class="max-w-full mx-auto p-4">
+        <div v-if="ifAnwerExist == false" class="max-w-full mx-auto p-4">
             <h2 class="text-xl font-bold mb-4 text-center">Questions</h2>
             <loadingComponent v-if="loading" />
-            <noContent v-if="noData" word="questions" />
+            <noContent v-if="noData" word="data" />
             <div class="flex justify-between" v-if="questions.length > 0 && order">
                 <div class="w-1/3 p-3" v-if="order.image">
                     <div>
@@ -74,6 +74,10 @@
                 </div>
             </div>
         </div>
+        <div v-else class="flex flex-col items-center justify-center min-h-screen">
+            <h2 class="text-2xl font-bold mb-4 text-center">You have already submitted your answers.</h2>
+            <p class="text-gray-600">Thank you for your feedback!</p>
+        </div>
     </GuestLayout>
 </template>
 
@@ -90,6 +94,8 @@ import { useRoute } from "vue-router";
 
 const route = useRoute();
 const { client } = useApolloClient();
+
+const ifAnwerExist = ref(false);
 
 const OrderWithQuestionsQuery = gql`
   query OrderWithQuestions($slug: String!) {
@@ -111,7 +117,7 @@ const OrderWithQuestionsQuery = gql`
 `;
 
 const answers = ref([]);
-const phone = ref('')
+const phone = ref('');
 const noData = ref(false);
 const { result, loading, error } = useQuery(OrderWithQuestionsQuery, {
     slug: route.params.slug
@@ -120,11 +126,19 @@ const order = computed(() => result.value?.order || null);
 const questions = computed(() => result.value?.allquestions || []);
 
 watch(error, () => {
-    if (error.value) {
+    if (error.value.message == 'This order already has an answer.') {
+        ifAnwerExist.value = true;
+        Swal.fire({
+            icon: 'warning',
+            title: 'Warning',
+            text: 'sorry, you have already submitted your answers for this order. Thank you!',
+        });
+    } else if (error.value.message == 'Order not found.') {
+        noData.value = true;
         Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: error.value.message,
+            text: 'invalid link, order not found.',
         });
     }
 })
@@ -175,7 +189,7 @@ const submit = async () => {
                 answersQuestions: answers.value,
             },
         });
-        Object.keys(answers.value).forEach(key => answers.value[key] = '');
+        ifAnwerExist.value = true;
         phone.value = '';
         Swal.fire({
             icon: 'success',
